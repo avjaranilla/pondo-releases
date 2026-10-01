@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Pondo</title>
+<meta name="description" content="Download Pondo, the bills and expenses tracker for Android.">
+<style>
+  :root {
+    --bg: #F4F1EA; --card: #FFFFFF; --ink: #1D2321; --muted: #5E6763;
+    --accent: #0F5F58; --accent-ink: #FFFFFF; --warn-bg: #FFF4D6; --warn-ink: #6B4E00; --line: #E3DED3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141816; --card: #1E2321; --ink: #EEF1EF; --muted: #A3ACA8;
+      --accent: #4FB3A8; --accent-ink: #08201D; --warn-bg: #3A3014; --warn-ink: #F3DC9B; --line: #2E3532;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 480px; margin: 0 auto; padding: 32px 16px 48px; }
+  .mark {
+    width: 72px; height: 72px; border-radius: 20px; background: var(--accent); color: var(--accent-ink);
+    display: grid; place-items: center; font-size: 40px; font-weight: 700; margin: 0 auto 12px;
+  }
+  h1 { text-align: center; margin: 0; font-size: 30px; }
+  .tag { text-align: center; color: var(--muted); margin: 2px 0 24px; }
+  .warn {
+    display: none; background: var(--warn-bg); color: var(--warn-ink); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .warn.show { display: block; }
+  .btn {
+    display: block; width: 100%; text-align: center; text-decoration: none; border: 0; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; font-size: 19px;
+    padding: 16px; border-radius: 14px;
+  }
+  .btn.small { font-size: 16px; padding: 12px; margin-top: 10px; }
+  .meta { text-align: center; color: var(--muted); font-size: 14px; margin: 8px 0 28px; min-height: 1.5em; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 18px 6px; }
+  h2 { font-size: 18px; margin: 0 0 10px; }
+  ol { margin: 0; padding-left: 22px; }
+  li { margin-bottom: 12px; }
+  .note { color: var(--muted); font-size: 15px; margin-top: 20px; }
+  strong { font-weight: 650; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark" aria-hidden="true">₱</div>
+  <h1>Pondo</h1>
+  <p class="tag">Bills &amp; expenses tracker for Android</p>
+
+  <div class="warn" id="inapp" role="alert">
+    <strong>Open this page in Chrome first.</strong> Apps like Messenger break the download.
+    <a class="btn small" id="chrome" href="#">Open in Chrome</a>
+  </div>
+
+  <a class="btn" id="dl" href="https://github.com/avjaranilla/pondo-releases/releases/latest/download/Pondo.apk">Download Pondo</a>
+  <p class="meta" id="meta"></p>
+
+  <section class="card">
+    <h2>Install in 3 steps</h2>
+    <ol>
+      <li><strong>Tap Download Pondo</strong> above. If Chrome asks, tap <strong>Download anyway</strong>.</li>
+      <li><strong>Open the file</strong> from the notification, or from Chrome's <strong>⋮ → Downloads</strong>.</li>
+      <li>Tap <strong>Install</strong>. If Android asks first, tap <strong>Settings</strong>, turn on <strong>Allow from this source</strong>, go back and tap <strong>Install</strong>.</li>
+    </ol>
+  </section>
+
+  <p class="note">If Play Protect warns about an unknown app, tap <strong>More details → Install anyway</strong>. It warns because Pondo isn't from the Play Store.</p>
+  <p class="note">After this, Pondo updates itself. Already have Pondo? Install over it to update and your data stays. <strong>Never uninstall</strong>: that deletes your data.</p>
+</main>
+<script>
+  // In-app browsers (Messenger, Facebook, Instagram…) save the file without its .apk name.
+  var ua = navigator.userAgent || '';
+  if (/FBAN|FBAV|FB_IAB|Messenger|Instagram|Line\/|; wv\)/i.test(ua) && /Android/i.test(ua)) {
+    document.getElementById('inapp').classList.add('show');
+    document.getElementById('chrome').href =
+      'intent://' + location.host + location.pathname + '#Intent;scheme=https;package=com.android.chrome;end';
+  }
+  fetch('https://api.github.com/repos/avjaranilla/pondo-releases/releases/latest')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (rel) {
+      if (!rel) return;
+      var apk = (rel.assets || []).filter(function (a) { return a.name === 'Pondo.apk'; })[0];
+      var mb = apk ? ' · ' + (apk.size / 1048576).toFixed(1) + ' MB' : '';
+      document.getElementById('meta').textContent = 'Version ' + rel.tag_name.replace(/^v/, '') + mb;
+    })
+    .catch(function () {});
+</script>
+</body>
+</html>
